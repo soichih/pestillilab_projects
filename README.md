@@ -3,7 +3,7 @@ This repository contains code currently being developed for research projects in
 
 ## Current active projects.
 ### LiFE connectomics (Brent McPherson)
-  Repository subfolder name: /conn
+  Repository subfolder name: /life_conn
 
 ### White matter plasticity (Sam Faber)
   Repository subfolder name: /wmp
