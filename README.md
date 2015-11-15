@@ -1,8 +1,12 @@
-# pestillilab_projects
-This repository contains code beign developed for a majority of the projects being undertaken by the Pestilli Research Group.
+# Repository name: pestillilab_projects
+This repository contains code currently being developed for research projects in the Pestilli Research Laboratory.
 
-This is a for of the repository for Brent.
+## Current active projects.
+### LiFE connectomics (Brent McPherson)
+  Repository subfolder name: /conn
 
-# This is a heading
+### White matter plasticity (Sam Faber)
+  Repository subfolder name: /wmp
 
-## This is a subheading
+### Computational brain anatomy (Dan Bullock)
+  Repository subfolder name: /coba
