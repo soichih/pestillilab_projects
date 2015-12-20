@@ -12,7 +12,7 @@ module load mrtrix/0.2.12
 
 SUBJ=$1
 
-DWIFILENAME=run02_fliprot_aligned_trilin
+DWIFILENAME=run01_fliprot_aligned_trilin
 TOPDIR=/N/dc2/projects/lifebid/2t1/predator/$SUBJ
 
 ## DWIFILENAME=dwi_data_b2000_aligned_trilin

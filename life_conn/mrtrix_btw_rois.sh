@@ -14,7 +14,7 @@ TOPDIR=/N/dc2/projects/lifebid/HCP/Brent
 PRJDIR=$TOPDIR/vss-2016
 OUTDIR=$PRJDIR/mrtrix
 ROIDIR=$OUTDIR/rois
-TCKDIR=$OUTDIR/tracks
+TCKDIR=$OUTDIR/ensemble_tracks
 
 ##
 ## convert / create files
@@ -63,7 +63,12 @@ TCKDIR=$OUTDIR/tracks
 ## create fibers between each pair of ROIs
 ##
 
-set -- `find $ROIDIR -type f -name "*.mif" | sed 's#.*/##'`
+TCKAL=("SD_STREAM" "SD_PROB")
+CURVE=("0.25" "0.50" "1.00" "2.00" "4.00")
+COUNT=1
+# LOG=$OUTDIR/ensemble_tracks_count.log
+
+set -- `find $ROIDIR -maxdepth 1 -mindepth 1 -type f -name "*.mif" | sed 's#.*/##'`
 ## set files to be all rois - no path info
 for a; do
     shift
@@ -75,14 +80,45 @@ for a; do
  	B=`echo $b | sed 's/.mif//g'`
  	printf "%s to %s\n" "$A" "$B"
 	
+	## qsub each fiber for parallel creation
+	## /N/dc2/projects/lifebid/HCP/Brent/vss-2016/pestillilab_projects/life_conn/mrtrix_qsub.sh $ROIDIR $OUTDIR $TCKDIR $a $b $A $B
+
 	## create seed mask
-	mradd $ROIDIR/$a $ROIDIR/$b $ROIDIR/seed_tmp.mif
+	mradd $ROIDIR/$a $ROIDIR/$b $ROIDIR/seed_tmp.mif -quiet
+
+	## ADD ANOTHER LOOP WITH DIFFERENT SETTINGS FOR ENSEMBLE TRACTOGRAPHY
+	## 1. Run different algorithms: deterministic (SD_STREAM), probabalistic (SD_PROB)
+	## 2. Run for each algorithm a series of turning threshold: step size (mm), curvature
+	## 3. Catch the number of generated fibers for each iteration
 
         ## create a probabilistic lh tract between the two ROIs using CSD
- 	streamtrack -seed $ROIDIR/seed_tmp.mif -mask $OUTDIR/dwi_data_b2000_aligned_trilin_brainmask.mif -grad $OUTDIR/dwi_data_b2000_aligned_trilin.b -include $ROIDIR/$a -include $ROIDIR/$b  SD_PROB $OUTDIR/CSD10.mif $TCKDIR/${A}_to_${B}.tck -number 1000 -maxnum 100000
+ 	## streamtrack -seed $ROIDIR/seed_tmp.mif -mask $OUTDIR/wm_aseg.mif -grad $OUTDIR/dwi_data_b2000_aligned_trilin.b -include $ROIDIR/$a -include $ROIDIR/$b  SD_PROB $OUTDIR/CSD10.mif $TCKDIR/${A}_to_${B}.tck -number 100 -maxnum 1000
+	
+	for c in SD_STREAM SD_PROB; do
+	    for d in 0.25 0.50 1.00 2.00 4.00; do
+
+		CLABEL=`printf "%07g" $COUNT`
+
+		echo tck${CLABEL}_${c}_${d}_${A}_to_${B}.tck
+		streamtrack $c $OUTDIR/CSD10.mif $TCKDIR/tck${CLABEL}_${c}_${d}_${A}_to_${B}.tck \
+                    -seed $ROIDIR/seed_tmp.mif -mask $OUTDIR/wm_aseg.mif \
+                    -grad $OUTDIR/dwi_data_b2000_aligned_trilin.b \
+                    -include $ROIDIR/$a -include $ROIDIR/$b -number 100 -maxnum 1000 -curvature $d
+
+		let COUNT=COUNT+=1
+	    done
+	done
+
+        ## DOES IT STOP WHEN IT EXITS WHITE MATTER OR WHEN IT HITS ROI
 	
 	## clear out seed file...
 	rm -f $ROIDIR/seed_tmp.mif
 
     done
 done
+
+## streamtrack SD_PROB $OUTDIR/CSD10.mif $TCKDIR/${A}_to_${B}.tck \
+##     -seed $ROIDIR/seed_tmp.mif -mask $OUTDIR/wm_aseg.mif \
+##     -grad $OUTDIR/dwi_data_b2000_aligned_trilin.b \
+##     -include $ROIDIR/$a -include $ROIDIR/$b -number 100 -maxnum 1000 \ 
+##     -step 0.2 -curvature 1
