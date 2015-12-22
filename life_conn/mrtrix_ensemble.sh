@@ -63,7 +63,7 @@ done
 ## tracking
 ##
 
-streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dt.mif \
+streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif \
                       $OUTDIR/${DWIFILENAME}_wm_tensor-$NUMFIBERS.tck \
                 -seed $OUTDIR/${DWIFILENAME}_wm.mif \ 
                 -mask $OUTDIR/${DWIFILENAME}_wm.mif \
