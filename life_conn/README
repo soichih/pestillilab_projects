@@ -1,0 +1,31 @@
+## Brent McPherson
+## 20151220
+##
+
+1.function/script (1)  Written mrtrix shell script to conduct ROI to ROI ensemble tracking
+   pestillilab_projects/life_conn/mrtrix_btw_rois.sh
+	this script takes an input of path to fit mrtrix files ready for tracking and a folder of .mif ROI files to track b/w each unique pair
+	this script then writes all the .tck files to a single folder with 1) sequential number for aligning fibers to roi/algorithm and 
+	2) the type/curve/roi1/roi2 labels associated with the files
+
+2.function/script (2)  Load and save the .tck files into .mat files
+   While this happend, the counts of fibers per .tck file are stored so they can be used in feVirtualLesion
+   Plan: build a tensor model of fiber outputs: roi x roi x tractography type x fiber count;
+   	 tractography type adds a dimension for each variable iterated across (det/prob, curvature, lmax, etc.) - multiple dictionaries
+	 one dictionary will be a fiber count
+	 dictionary always contains strings - ROI names, tractography types, (det/prob, curvature, etc.)
+	 This will allow for simplified indexing of whole brain connectivity for every combination of tractography variables and combining them.
+   Output:   
+   	2.1) .mat file for each fiber group
+   	2.2) series of dictionaries and a multi-dimensional array tensor  
+   	2.3) merged .mat fiber group where fiber order can be indexed from 2.2 output
+
+3. function/script (3) Build LiFE model and optimize using the merged FG from (2), svae to disk
+4. function/script (4) load FE from (3) perfomr virtual lesions, save to disk results into a matrix
+5. compute BCT stats on marix from 4. IMPORTANTLY: We will need code that can take any subset of ET fascicles using the Tensor and dictionaries
+    and rcompute 4. and 5. by leasioning only those fascicles.
+
+* Cesar and Franco?
+6. Change the virtual lesion code to exploit the multi-diminsional arrays existing in the new life model (Phi).
+   Instead of End -> Fiber -> voxels, index fibers in tensor - many fewer look-up steps
+

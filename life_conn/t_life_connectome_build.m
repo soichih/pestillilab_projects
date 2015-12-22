@@ -22,10 +22,12 @@ fs_subject = '105115';
 projPath = '/N/dc2/projects/lifebid/HCP/Brent';
 
 anatPath = fullfile(projPath, 'anatomy');
+
+% CHANGE THIS TO NEW ROIS
 roiPath = fullfile(projPath, 'anatomy', fs_subject, 'label');
 allRois = dir(fullfile(roiPath, '*.mat'));
 
-fbrsPath = fullfile(projPath, '105115', 'fibers');
+fbrsPath = fullfile(projPath, fs_subject, 'fibers');
 fbrs = {'dwi_data_b1000_aligned_trilin_csd_lmax10_dwi_data_b1000_aligned_trilin_brainmask_dwi_data_b1000_aligned_trilin_wm_prob-500000.pdb'};
 
 % Initialize the modules and FreeSurfer variables needed for the code
@@ -35,46 +37,20 @@ out = initialize_env;
 % HAS TO BE SET CORRECTLY BEFORE MATLAB LOADS
 fsSubjectDir = getenv('SUBJECTS_DIR');
 
-% pull FS SUBJECTS_DIR directory
-if notDefined('annotationFileName')
-    annotationFileName = {'aparc.a2009s'};
-end
-
 %% generate image files
 
-% Create all the necessary label files
-for ia = 1:length(annotationFileName)
-    fs_annotationToLabelFiles(fs_subject, annotationFileName{ia}, [], fsSubjectDir);
-end
-
 % File all the label ROIs for this subject
-labelFileNames   = dir(fullfile(fsSubjectDir,fs_subject,'label','*.label'));
-labelRoiName     = cell(length(labelFileNames),1);
-niftiRoiFullPath = cell(length(labelFileNames),1);
-matRoiFullPath  = cell(length(labelFileNames),1);
+labelFileNames   = dir(fullfile(fsSubjectDir, fs_subject, 'label', '*.label'));
+labelRoiName     = cell(length(labelFileNames), 1);
+niftiRoiFullPath = cell(length(labelFileNames), 1);
+matRoiFullPath   = cell(length(labelFileNames), 1);
 
 for il = 1:length(labelFileNames)
     labelRoiName{il}  = labelFileNames(il).name;
     niftiRoiName      = labelRoiName{il};
     niftiRoiName(niftiRoiName=='.') = '_';
-    niftiRoiFullPath{il}  = fullfile(fsSubjectDir,fs_subject,'label',  niftiRoiName);
-    matRoiFullPath{il}   = [fullfile(fsSubjectDir,fs_subject,'label',  niftiRoiName),'_smooth3mm_ROI.mat'];
-end
-
-% genearate .mat ROIs for mrDiffusion
-% CHECK IF THERE IS A BETTER FS WAY TO INFLATE ROIS INTO WHITE MATTER
-% THIS WRITES A LOT OF STUFF IN THE HEAD OF SUBJECTS_DIR - WHY?
-for il = 1:length(labelFileNames)
-    if ~(exist([niftiRoiFullPath{il},'_smooth3mm.nii.gz'],'file')==2) || clobber
-        fs_labelFileToNiftiRoi(fs_subject,labelRoiName{il},niftiRoiFullPath{il},labelFileNames(il).name(1:2),[],[],fsSubjectDir);
-    else
-        fprintf('[%s] Found ROI, skipping: \n%s\n',mfilename,niftiRoiFullPath{il})
-    end
-    if ~(exist([matRoiFullPath{il}],'file')==2) || clobber
-        dtiImportRoiFromNifti([niftiRoiFullPath{il},'_smooth3mm.nii.gz'], matRoiFullPath{il});
-    else
-        fprintf('[%s] Found ROI, skipping: \n%s\n',mfilename,niftiRoiFullPath{il})
-    end
+    niftiRoiFullPath{il}  = fullfile(fsSubjectDir, fs_subject, 'label',  niftiRoiName);
+    matRoiFullPath{il}    = [fullfile(fsSubjectDir, fs_subject, 'label',  niftiRoiName), '_smooth3mm_ROI.mat'];
 end
 
 %% generate connectome
@@ -86,11 +62,10 @@ combinations = nchoosek(1:length(labelFileNames), 2);
 % load whole brain fiber group
 wbfg = fgRead(fullfile(fbrsPath, fbrs{1}));
 
-keyboard
-
 % load each ROI and find the EDGE between them
 for ir = 1:length(combinations)
-    
+
+    % read in the ROIs
     roi1 = dtiReadRoi(fullfile(roiPath, allRois(combinations(ir, 1)).name));
     roi2 = dtiReadRoi(fullfile(roiPath, allRois(combinations(ir, 2)).name));
     
@@ -108,8 +83,6 @@ for ir = 1:length(combinations)
     % EDGE = cleaned(EDGE);
     
 end
-
-keyboard
 
 end % end main
 
