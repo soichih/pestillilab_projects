@@ -7,7 +7,7 @@
 
 rootpath = '/N/dc2/projects/lifebid/';
 addpath(genpath('code/ccaiafa/Caiafa_Pestilli_paper2015/lifebid/'))
-subject = {'KW','KK','HT','FP'};
+subject = {'KW','KK','HT','FP','MP'};
 
 for isbj = 1:length(subject)
     fe_path = fullfile(rootpath,'code/ccaiafa/Caiafa_Pestilli_paper2015/Results');
