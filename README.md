@@ -9,4 +9,4 @@ This repository contains code currently being developed for research projects in
   Repository subfolder name: /wmp
 
 ### Computational brain anatomy (Dan Bullock)
-  Repository subfolder name: /coba
+  Repository subfolder name: /vertra
