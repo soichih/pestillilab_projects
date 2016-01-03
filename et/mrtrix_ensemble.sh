@@ -89,7 +89,7 @@ streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif \
 for i_tracktype in SD_STREAM SD_PROB; do
 echo Tracking ($i_tracktype) Deterministic=1 / Probabilistic=2 CSD-based
     for i_lmax in 2 4 6 8 10 12; do
-	echo Tracking CSD-based (Lmax=$i_tracktype)
+	echo Tracking CSD-based (Lmax=$i_lmax)
 	streamtrack $i_tracktype $OUTDIR/${DWIFILENAME}_lmax${i_lmax}.mif \
 	               $OUTDIR/${DWIFILENAME}_csd_lmax${i_lmax}_wm_${i_tracktype}-$NUMFIBERS.tck \
                  -seed $OUTDIR/${DWIFILENAME}_wm.mif \
@@ -98,7 +98,7 @@ echo Tracking ($i_tracktype) Deterministic=1 / Probabilistic=2 CSD-based
                -number $NUMFIBERS \
 	       -maxnum $MAXNUMFIBERSATTEMPTED
     done
-echo DONE Tracking ($i_lmax) Deterministic=1 / Probabilistic=2 CSD-based
+echo DONE Tracking ($i_tracktype) Deterministic=1 / Probabilistic=2 CSD-based
 done
 
 ##
