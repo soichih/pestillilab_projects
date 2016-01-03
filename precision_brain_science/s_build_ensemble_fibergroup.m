@@ -9,12 +9,11 @@ subjects = {'FP', 'HT', 'KK', 'MP', 'KW', 'JW'};
 for is = 1:length(subjects)
 tic
 cd(sprintf('/N/dc2/projects/lifebid/2t1/predator/%s_96dirs_b2000_1p5iso/fibers',subjects{is}))
-alfiles = dir('run01*-500000.tck');
-
+alfiles = dir('run01*-500000*.tck');
+keyboard
 for ifg = 1:length(alfiles)
             fprintf('\n Loading %i of %i fibergroup',ifg,length(alfiles))
             fprintf('\n READING: %s ... ', alfiles(ifg).name)
-
   if ifg == 1
       fgal = dtiImportFibersMrtrix(alfiles(ifg).name);
       fgWrite(fgal,fgal.name,'mat');

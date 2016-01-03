@@ -1,4 +1,4 @@
-function s_plot_major_tracts_from_fe_structure_ET_run01_run02
+function s_plot_major_tracts_from_fe_structure_ST_run01_run02
 
 restoredefaultpath
 rootpath = '/N/dc2/projects/lifebid/';
@@ -7,19 +7,29 @@ addpath(genpath(fullfile(rootpath,'code/vistasoft')))
 addpath(genpath(fullfile(rootpath,'code/franpest/AFQ/')))
 addpath(genpath(fullfile(rootpath,'code/mba/')))
 
-subject      = {'KW','HT'}; % why not JW?
-trackingType = {'ETrun01','ETrun02'};
-fe_path      = fullfile(rootpath,'code/ccaiafa/Caiafa_Pestilli_paper2015/Results/ETC_Dec2015/ETC_full_range_lmax/');
+subject = {'FP','MP','KK','KW','HT'}; % why not JW?
+runType = {'STrun01','STrun02'};
+trackingType = {'DT_TENSOR_', ...
+                'SD_PROB_lmax2', 'SD_STREAM_lmax2', ...
+                'SD_PROB_lmax4', 'SD_STREAM_lmax4', ...
+                'SD_PROB_lmax6', 'SD_STREAM_lmax6', ...
+                'SD_PROB_lmax8', 'SD_STREAM_lmax8', ...
+                'SD_PROB_lmax10','SD_STREAM_lmax10', ...
+                'SD_PROB_lmax12','SD_STREAM_lmax12', ...
+                };
+fe_path      = fullfile(rootpath,'code/ccaiafa/Caiafa_Pestilli_paper2015/Results/ETC_Dec2015/Single_TC/');
+%tracts_path = '/N/dc2/projects/lifebid/major_tracts/';
 
+for iTrack = 1:length(trackingType)
 for isbj = 1:length(subject)
-    for it = 1:length(trackingType)
-        fprintf('\n Working on Subject %s Run#%i \n',subject{isbj},it)
-        switch trackingType{it}
-            case 'ETrun01'
-                fasciclesClassificationSaveName = sprintf('fe_structure_%s_96dirs_b2000_1p5iso_ETC_run01_500000_TRACTS.mat',subject{isbj});
+    for iRun = 1:length(runType)
+        fprintf('\n Working on Subject %s Run#%i \n',subject{isbj},iRun)
+        switch runType{iRun}
+            case 'STrun01'
+                fasciclesClassificationSaveName = sprintf('fe_structure_%s_96dirs_b2000_1p5iso_STC_run01_500000_%s_TRACTS.mat',subject{isbj},trackingType{iTrack});
                 
-            case 'ETrun02'
-                fasciclesClassificationSaveName = sprintf('fe_structure_%s_96dirs_b2000_1p5iso_ETC_run02_500000_TRACTS',subject{isbj});
+            case 'STrun02'
+                fasciclesClassificationSaveName = sprintf('fe_structure_%s_96dirs_b2000_1p5iso_STC_run02_500000_%s_TRACTS.mat',subject{isbj},trackingType{iTrack});
         end
         tracts_file = fullfile(fe_path,fasciclesClassificationSaveName);
         
@@ -29,12 +39,12 @@ for isbj = 1:length(subject)
         
         % Plot the tracts
         t1File  = fullfile(rootpath,sprintf('2t1/predator/%s_96dirs_b2000_1p5iso/',subject{isbj}),'anatomy','t1.nii.gz');
-        anatomy  = niftiRead(t1File);
+        anatomy = niftiRead(t1File);
         
         savedir  = fullfile(fe_path,'major_tracts');
         mkdir(savedir);
         
-        fig_name = sprintf('%s_fig_',fasciclesClassificationSaveName);
+        fig_name   = sprintf('%s_fig_',fasciclesClassificationSaveName);
         viewCoords = [-90,0];
         slice = [1 0 0];
         color = getColors;
@@ -43,7 +53,7 @@ for isbj = 1:length(subject)
         close all; drawnow
         
         viewCoords = [0,90];
-        slice = [0 0 6];
+        slice      = [0 0 6];
         [fig_h, ~, ~] = plotFascicles(fascicles, color, slice, anatomy, viewCoords, fig_name);
         feSavefig(fig_h,'verbose','yes','figName',[fig_name, 'AX'],'figDir',savedir,'figType','jpg');
         close all; drawnow
@@ -57,6 +67,8 @@ for isbj = 1:length(subject)
         clear fascicles
     end
 end
+end
+
 end % END MAIN FUNCTION
 
 function [fig_h, light_h, brain_h] = plotFascicles(fascicles, color, slice, anatomy, viewCoords, fig_name)
@@ -191,7 +203,7 @@ function figDir = feSavefig(h,varargin)
 figName           = sprintf('feFig_%s',get(h,'Name')); % the name of the figure file
 figDir            = '.'; % the subfolder where to save this figure
 figType           = 'png';
-verbose           = 'yes'; % 'yes', 'no', display on screen what it is going on
+verbose           = 'yes'; % 'yes', 'no', display on screen what iRun is going on
 
 if ~isempty(varargin)
     if mod(length(varargin),2), error('varargin must be pairs'); end
@@ -200,7 +212,7 @@ if ~isempty(varargin)
     end
 end
 
-% make the figure dir if it does not exist:
+% make the figure dir if iRun does not exist:
 if ~isdir(figDir), mkdir(figDir);end
 
 % Create a print command that will save the figure
@@ -236,7 +248,7 @@ end
 % Do the printing here:
 eval(printCommand);
 
-% Delete output if it was nto requested
+% Delete output if iRun was nto requested
 if (nargout < 1), clear figDir;end
 
 end
