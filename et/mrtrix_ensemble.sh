@@ -1,5 +1,5 @@
 #!/bin/bash
-## Ensemble tractogrpahy
+## Ensemble tractography cadidate fascicles generation script.
 ## 
 ## This shell script uses mrtrix/0.2.12 to run a series of tractography methods using both probabilistic
 ## and deterministic tractography based on the tensor model or on constrained spherical deconvolution. 
@@ -23,7 +23,9 @@ DWIFILENAME=dwi_data_b2000_aligned_trilin
 TOPDIR=/N/dc2/projects/lifebid/2t1/HCP/$SUBJ
 
 ANATDIR=$TOPDIR/anatomy
-OUTDIR=$TOPDIR/fibers
+OUTDIR=$TOPDIR/fibers_new
+
+mkdir -v $OUTDIR
 
 ## Number of fibers requested and max number attempted to hit the number.
 NUMFIBERS=500000
@@ -64,6 +66,7 @@ estimate_response $OUTDIR/${DWIFILENAME}_dwi.mif $OUTDIR/${DWIFILENAME}_sf.mif -
 ## Perform CSD in each white matter voxel
 for i_lmax in 2 4 6 8 10 12; do
     csdeconv $OUTDIR/${DWIFILENAME}_dwi.mif -grad $OUTDIR/$DWIFILENAME.b $OUTDIR/${DWIFILENAME}_response.txt -lmax $i_lmax -mask $OUTDIR/${DWIFILENAME}_brainmask.mif $OUTDIR/${DWIFILENAME}_lmax${i_lmax}.mif
+echo DONE Lmax=$i_lmax 
 done 
 
 ##
@@ -73,6 +76,7 @@ echo DONE performing preprocessing of data before starting tracking...
 ##
 echo START tracking...
 ##
+echo tracking Deterministic Tensor-based
 streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif \
                       $OUTDIR/${DWIFILENAME}_wm_tensor-$NUMFIBERS.tck \
                 -seed $OUTDIR/${DWIFILENAME}_wm.mif \ 
@@ -83,8 +87,9 @@ streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif \
 
 ## loop over tracking and lmax
 for c in SD_STREAM SD_PROB; do
+echo Tracking ($c) Deterministic=1/Probabilistic=2 CSD-based
     for d in 2 4 6 8 10 12; do
-	
+	echo Tracking CSD-based (Lmax=$c)
 	streamtrack $c $OUTDIR/${DWIFILENAME}_lmax${d}.mif \
 	               $OUTDIR/${DWIFILENAME}_csd_lmax${d}_wm_${c}-$NUMFIBERS.tck \
                  -seed $OUTDIR/${DWIFILENAME}_wm.mif \
@@ -92,11 +97,11 @@ for c in SD_STREAM SD_PROB; do
                  -grad $OUTDIR/$DWIFILENAME.b \
                -number $NUMFIBERS \
 	       -maxnum $MAXNUMFIBERSATTEMPTED
-
     done
+echo DONE Tracking ($c) Deterministic=1 / Probabilistic=2 CSD-based
 done
 
 ##
-echo DONE tracking. Exiting Ensebmle Tracking Script
+echo DONE tracking. Exiting Ensemble Tracking Candidate Fascicle Generation Script
 ##
 
