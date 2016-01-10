@@ -10,3 +10,6 @@ This repository contains code currently being developed for research projects in
 
 ### Computational brain anatomy (Dan Bullock)
   Repository subfolder name: /vertra
+
+### Tracking using multiple algorithms (Franco Pestilli)
+  Repository subfolder name: /et
