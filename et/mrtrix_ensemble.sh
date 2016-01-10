@@ -16,13 +16,14 @@ module load mrtrix/0.2.12
 SUBJ=$1
 
 ## Set paths to diffusion data directories
-## DWIFILENAME=run01_fliprot_aligned_trilin
-## TOPDIR=/N/dc2/projects/lifebid/2t1/predator/$SUBJ
+DWIFILENAME=run01_fliprot_aligned_trilin
 
-DWIFILENAME=dwi_data_b2000_aligned_trilin
-TOPDIR=/N/dc2/projects/lifebid/2t1/HCP/$SUBJ
+## HCP dataset
+## DWIFILENAME=dwi_data_b3000_aligned_trilin
+## TOPDIR=/N/dc2/projects/lifebid/2t1/HCP/$SUBJ
 
-ANATDIR=$TOPDIR/anatomy
+## STN96 dataset
+ANATDIR=/N/dc2/projects/lifebid/2t1/anatomy/$SUBJ
 OUTDIR=$TOPDIR/fibers_new
 
 mkdir -v $OUTDIR
@@ -66,7 +67,7 @@ estimate_response $OUTDIR/${DWIFILENAME}_dwi.mif $OUTDIR/${DWIFILENAME}_sf.mif -
 ## Perform CSD in each white matter voxel
 for i_lmax in 2 4 6 8 10 12; do
     csdeconv $OUTDIR/${DWIFILENAME}_dwi.mif -grad $OUTDIR/$DWIFILENAME.b $OUTDIR/${DWIFILENAME}_response.txt -lmax $i_lmax -mask $OUTDIR/${DWIFILENAME}_brainmask.mif $OUTDIR/${DWIFILENAME}_lmax${i_lmax}.mif
-echo DONE Lmax=$i_lmax 
+## echo DONE Lmax=$i_lmax 
 done 
 
 ##
@@ -76,20 +77,16 @@ echo DONE performing preprocessing of data before starting tracking...
 ##
 echo START tracking...
 ##
-echo tracking Deterministic Tensor-based
-streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif \
-                      $OUTDIR/${DWIFILENAME}_wm_tensor-$NUMFIBERS.tck \
-                -seed $OUTDIR/${DWIFILENAME}_wm.mif \ 
-                -mask $OUTDIR/${DWIFILENAME}_wm.mif \
-                -grad $OUTDIR/${DWIFILENAME}.b \
-	      -number $NUMFIBERS \
-              -maxnum $MAXNUMFIBERSATTEMPTED
+##echo tracking Deterministic Tensorbased
+streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif $OUTDIR/${DWIFILENAME}_wm_tensor-$NUMFIBERS.tck -seed $OUTDIR/${DWIFILENAME}_wm.mif -mask $OUTDIR/${DWIFILENAME}_wm.mif -grad $OUTDIR/${DWIFILENAME}.b -number $NUMFIBERS -maxnum $MAXNUMFIBERSATTEMPTED
 
 ## loop over tracking and lmax
 for i_tracktype in SD_STREAM SD_PROB; do
-echo Tracking ($i_tracktype) Deterministic=1 / Probabilistic=2 CSD-based
+##
+##echo Tracking $i_tracktype Deterministic=1 Probabilistic=2 CSD-based
+##
     for i_lmax in 2 4 6 8 10 12; do
-	echo Tracking CSD-based (Lmax=$i_lmax)
+	##echo Tracking CSD-based Lmax=$i_lmax
 	streamtrack $i_tracktype $OUTDIR/${DWIFILENAME}_lmax${i_lmax}.mif \
 	               $OUTDIR/${DWIFILENAME}_csd_lmax${i_lmax}_wm_${i_tracktype}-$NUMFIBERS.tck \
                  -seed $OUTDIR/${DWIFILENAME}_wm.mif \
@@ -98,7 +95,9 @@ echo Tracking ($i_tracktype) Deterministic=1 / Probabilistic=2 CSD-based
                -number $NUMFIBERS \
 	       -maxnum $MAXNUMFIBERSATTEMPTED
     done
-echo DONE Tracking ($i_tracktype) Deterministic=1 / Probabilistic=2 CSD-based
+##
+##echo DONE Tracking $i_tracktype Deterministic=1 Probabilistic=2 CSD-based
+##
 done
 
 ##
