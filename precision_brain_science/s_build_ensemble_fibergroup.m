@@ -4,12 +4,13 @@
 % Franco Pestilli Indiana University 2015.11.09
 
 basedir = '/N/dc2/projects/lifebid/2t1/predator/%s_96dirs_b2000_1p5iso/fibers';
-subjects = {'FP', 'HT', 'KK', 'MP', 'KW', 'JW'};
+subjects = {'FP'};
+runType = 'run02';
 
 for is = 1:length(subjects)
 tic
 cd(sprintf('/N/dc2/projects/lifebid/2t1/predator/%s_96dirs_b2000_1p5iso/fibers',subjects{is}))
-alfiles = dir('run01*-500000*.tck');
+alfiles = dir(sprintf('%s*-500000*.tck',runType));
 
 for ifg = 1:length(alfiles)
             fprintf('\n Loading %i of %i fibergroup',ifg,length(alfiles))
@@ -27,14 +28,14 @@ for ifg = 1:length(alfiles)
 end
 
 disp('\n Saving ensemble fiber group to disk... ')
-fgal.name = sprintf('%s_run01_96_b2000_ensemble_fibers.mat', subjects{is});
+fgal.name = sprintf('%s_%s_96_b2000_ensemble_fibers.mat', subjects{is},runType);
 fgal.pathwayInfo = [];
 fgWrite(fgal);
-save(sprintf('%s_run01_96_b2000_ensemble_fibers_orig_names.mat', subjects{is}),'alfiles','-v7.3');
+save(sprintf('%s_%s_96_b2000_ensemble_fibers_orig_names.mat', subjects{is}, runType),'alfiles','-v7.3');
 
 % Change permissions to allow others to read/write.
 eval(sprintf('!chmod 777 %s', fgal.name))
-eval(sprintf('!chmod 777 %s_run01_96_b2000_ensemble_fibers_orig_names.mat', subjects{is}))
+eval(sprintf('!chmod 777 %s_%s_96_b2000_ensemble_fibers_orig_names.mat', subjects{is}, runType))
 
 toc
 end
