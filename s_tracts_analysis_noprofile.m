@@ -8,7 +8,7 @@
 %
 % Copyright Franco Pestilli Indiana University 2016
 %
-% Dependencis:
+% Dependencies:
 % addpath(genpath('~/path/to/spm8'))       % -> SPM/website
 % addpath(genpath('~/path/to/vistasoft')); % -> https://www.github.com/vistalab/vistasoft
 % addpath(genpath('~/path/to/life'));      % -> https://www.github.com/francopestilli/life
