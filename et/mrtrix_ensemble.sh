@@ -17,20 +17,21 @@ SUBJ=$1
 
 ## Set paths to diffusion data directories
 DWIFILENAME=run01_fliprot_aligned_trilin
+TOPDIR=/N/dc2/projects/lifebid/2t1/predator/$SUBJ
 
 ## HCP dataset
 ## DWIFILENAME=dwi_data_b3000_aligned_trilin
 ## TOPDIR=/N/dc2/projects/lifebid/2t1/HCP/$SUBJ
 
 ## STN96 dataset
-ANATDIR=/N/dc2/projects/lifebid/2t1/anatomy/$SUBJ
+ANATDIR=$TOPDIR/anatomy/
 OUTDIR=$TOPDIR/fibers_new
 
 mkdir -v $OUTDIR
 
 ## Number of fibers requested and max number attempted to hit the number.
 NUMFIBERS=500000
-MAXNUMFIBERSATTEMPTED=1500000
+MAXNUMFIBERSATTEMPTED=1000000
 
 ##
 echo 
@@ -78,8 +79,11 @@ echo DONE performing preprocessing of data before starting tracking...
 echo START tracking...
 ##
 ##echo tracking Deterministic Tensorbased
-streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif $OUTDIR/${DWIFILENAME}_wm_tensor-$NUMFIBERS.tck -seed $OUTDIR/${DWIFILENAME}_wm.mif -mask $OUTDIR/${DWIFILENAME}_wm.mif -grad $OUTDIR/${DWIFILENAME}.b -number $NUMFIBERS -maxnum $MAXNUMFIBERSATTEMPTED
+for i_track in 01 02 03 04 05 06 07 08 09 10; do
+streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif $OUTDIR/${DWIFILENAME}_wm_tensor-NUM${i_track}-$NUMFIBERS.tck -seed $OUTDIR/${DWIFILENAME}_wm.mif -mask $OUTDIR/${DWIFILENAME}_wm.mif -grad $OUTDIR/${DWIFILENAME}.b -number $NUMFIBERS -maxnum $MAXNUMFIBERSATTEMPTED
+done
 
+for i_track in 01 02 03 04 05 06 07 08 09 10; do
 ## loop over tracking and lmax
 for i_tracktype in SD_STREAM SD_PROB; do
 ##
@@ -87,19 +91,13 @@ for i_tracktype in SD_STREAM SD_PROB; do
 ##
     for i_lmax in 2 4 6 8 10 12; do
 	##echo Tracking CSD-based Lmax=$i_lmax
-	streamtrack $i_tracktype $OUTDIR/${DWIFILENAME}_lmax${i_lmax}.mif \
-	               $OUTDIR/${DWIFILENAME}_csd_lmax${i_lmax}_wm_${i_tracktype}-$NUMFIBERS.tck \
-                 -seed $OUTDIR/${DWIFILENAME}_wm.mif \
-		 -mask $OUTDIR/${DWIFILENAME}_wm.mif \
-                 -grad $OUTDIR/$DWIFILENAME.b \
-               -number $NUMFIBERS \
-	       -maxnum $MAXNUMFIBERSATTEMPTED
+	streamtrack $i_tracktype $OUTDIR/${DWIFILENAME}_lmax${i_lmax}.mif   $OUTDIR/${DWIFILENAME}_csd_lmax${i_lmax}_wm_${i_tracktype}-NUM${i_track}-$NUMFIBERS.tck -seed $OUTDIR/${DWIFILENAME}_wm.mif  -mask $OUTDIR/${DWIFILENAME}_wm.mif  -grad $OUTDIR/$DWIFILENAME.b -number $NUMFIBERS -maxnum $MAXNUMFIBERSATTEMPTED
     done
 ##
 ##echo DONE Tracking $i_tracktype Deterministic=1 Probabilistic=2 CSD-based
 ##
 done
-
+done
 ##
 echo DONE tracking. Exiting Ensemble Tracking Candidate Fascicle Generation Script
 ##
