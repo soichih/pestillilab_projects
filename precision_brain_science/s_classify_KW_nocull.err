@@ -1,0 +1,10 @@
+SPM (Statistical Parametric Mapping) software package version 8 loaded.
+MATLAB numerical calculation framework version 2015a loaded.
+{Error using load
+Unable to read file
+'/N/dc2/projects/lifebid/code/ccaiafa/Caiafa_Pestilli_paper2015/Results/ETC_Dec2015/Single_TC/KW/fe_structure_KW_96dirs_b2000_1p5iso_STC_run01_SD_STREAM_lmax4_connNUM07.mat'.
+No such file or directory.
+
+Error in s_classify_major_tracts_from_fe_structure_KW_noculling (line 39)
+        load(fe_file);
+} 
