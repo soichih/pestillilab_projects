@@ -16,12 +16,12 @@ module load mrtrix/0.2.12
 SUBJ=$1
 
 ## Set paths to diffusion data directories
-DWIFILENAME=run01_fliprot_aligned_trilin
-TOPDIR=/N/dc2/projects/lifebid/2t1/predator/$SUBJ
+## DWIFILENAME=run01_fliprot_aligned_trilin
+## TOPDIR=/N/dc2/projects/lifebid/2t1/predator/$SUBJ
 
 ## HCP dataset
-## DWIFILENAME=dwi_data_b3000_aligned_trilin
-## TOPDIR=/N/dc2/projects/lifebid/2t1/HCP/$SUBJ
+DWIFILENAME=dwi_data_b3000_aligned_trilin
+TOPDIR=/N/dc2/projects/lifebid/2t1/HCP/$SUBJ
 
 ## STN96 dataset
 ANATDIR=$TOPDIR/anatomy/

@@ -6,7 +6,7 @@ addpath(genpath(fullfile(rootpath,'code/ccaiafa/Caiafa_Pestilli_paper2015/lifebi
 addpath(genpath(fullfile(rootpath,'code/vistasoft')))
 addpath(genpath(fullfile(rootpath,'code/franpest/AFQ/')))
 
-subject      = {'FP','MP','KK','KW','HT'}; % why not JW?
+subject      = {'KW','HT','FP','MP','KK'}; % why not JW?
 trackingType = {'ETrun01','ETrun02'};
 fe_path      = fullfile(rootpath,'code/ccaiafa/Caiafa_Pestilli_paper2015/Results/ETC_Dec2015/ETC_full_range_lmax/');
 tracts_path = '/N/dc2/projects/lifebid/major_tracts/';
