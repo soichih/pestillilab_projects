@@ -5,6 +5,9 @@
 ## and deterministic tractography based on the tensor model or on constrained spherical deconvolution. 
 ##
 ## Brent McPherson and Franco Pestilli Indiana University 2016
+## http://jdtournier.github.io/mrtrix-0.2/
+## http://jdtournier.github.io/mrtrix-0.2/appendix/config.html
+##    --- NumberOfThreads: 2
 
 ## load necessary modules on the Karst cluster environment
 module unload mrtrix/0.3.12
@@ -30,8 +33,8 @@ OUTDIR=$TOPDIR/fibers_new
 mkdir -v $OUTDIR
 
 ## Number of fibers requested and max number attempted to hit the number.
-NUMFIBERS=500000
-MAXNUMFIBERSATTEMPTED=1000000
+NUMFIBERS=5000
+MAXNUMFIBERSATTEMPTED=10000
 
 ##
 echo 
