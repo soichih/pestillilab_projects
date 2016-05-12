@@ -8,6 +8,7 @@
 ## http://jdtournier.github.io/mrtrix-0.2/
 ## http://jdtournier.github.io/mrtrix-0.2/appendix/config.html
 ##    --- NumberOfThreads: 2
+## https://github.com/soichih/pestillilab_projects/blob/master/precision_brain_science/s_track_multi_113619.pbs
 
 ## load necessary modules on the Karst cluster environment
 module unload mrtrix/0.3.12
