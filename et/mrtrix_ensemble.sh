@@ -39,6 +39,11 @@ echo Performing preprocessing of data before starting tracking...
 echo 
 ##
 
+
+#########################################################################################################################
+#########################################################################################################################
+# DATA CONVERSION
+
 ## convert wm mask
 mrconvert $ANATDIR/wm_mask.nii.gz $OUTDIR/${DWIFILENAME}_wm.mif
 
@@ -47,6 +52,10 @@ mrconvert $TOPDIR/diffusion_data/$DWIFILENAME.nii.gz $OUTDIR/${DWIFILENAME}_dwi.
 
 ## make mask from DWI data
 average $OUTDIR/${DWIFILENAME}_dwi.mif -axis 3 - | threshold - - | median3D - - | median3D - $OUTDIR/${DWIFILENAME}_brainmask.mif
+
+#########################################################################################################################
+#########################################################################################################################
+# FIT TENSOR MODEL
 
 ## fit tensors
 dwi2tensor $OUTDIR/${DWIFILENAME}_dwi.mif -grad $OUTDIR/$DWIFILENAME.b $OUTDIR/${DWIFILENAME}_dt.mif 
@@ -57,6 +66,10 @@ tensor2FA $OUTDIR/${DWIFILENAME}_dt.mif - | mrmult - $OUTDIR/${DWIFILENAME}_brai
 ## create eigenvector map
 tensor2vector $OUTDIR/${DWIFILENAME}_dt.mif - | mrmult - $OUTDIR/${DWIFILENAME}_fa.mif $OUTDIR/${DWIFILENAME}_ev.mif
 
+#########################################################################################################################
+#########################################################################################################################
+# ESTIMATE RESPONSE FUNCTION
+
 ## # Estimate deconvolution kernel: Estimate the kernel for deconvolution, using voxels with highest FA
 ## erodes brainmask - removes extreme artifacts (w/ high FA), creates FA image, AND single fiber mask 
 erode $OUTDIR/${DWIFILENAME}_brainmask.mif -npass 3 - | mrmult $OUTDIR/${DWIFILENAME}_fa.mif - - | threshold - -abs 0.7 $OUTDIR/${DWIFILENAME}_sf.mif
@@ -64,6 +77,10 @@ erode $OUTDIR/${DWIFILENAME}_brainmask.mif -npass 3 - | mrmult $OUTDIR/${DWIFILE
 ## estimates response function
 estimate_response $OUTDIR/${DWIFILENAME}_dwi.mif $OUTDIR/${DWIFILENAME}_sf.mif -lmax 6 -grad $OUTDIR/$DWIFILENAME.b $OUTDIR/${DWIFILENAME}_response.txt
 ## # End estimation of deconvolution kernel
+
+#########################################################################################################################
+#########################################################################################################################
+# (OPTIONAL) CONSTRAINT SPHERICAL DECONVOLUTION
 
 ## Perform CSD in each white matter voxel
 for i_lmax in 2 4 6 8 10 12; do
@@ -75,6 +92,10 @@ done
 echo DONE performing preprocessing of data before starting tracking...
 ##
 
+#########################################################################################################################
+#########################################################################################################################
+
+
 ##
 echo START tracking...
 ##
@@ -82,6 +103,9 @@ echo START tracking...
 for i_track in 01 02 03 04 05 06 07 08 09 10; do
 streamtrack DT_STREAM $OUTDIR/${DWIFILENAME}_dwi.mif $OUTDIR/${DWIFILENAME}_wm_tensor-NUM${i_track}-$NUMFIBERS.tck -seed $OUTDIR/${DWIFILENAME}_wm.mif -mask $OUTDIR/${DWIFILENAME}_wm.mif -grad $OUTDIR/${DWIFILENAME}.b -number $NUMFIBERS -maxnum $MAXNUMFIBERSATTEMPTED
 done
+
+#########################################################################################################################
+#########################################################################################################################
 
 for i_track in 01 02 03 04 05 06 07 08 09 10; do
 ## loop over tracking and lmax
