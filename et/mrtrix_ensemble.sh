@@ -10,6 +10,8 @@
 ##    --- NumberOfThreads: 2
 ## https://github.com/soichih/pestillilab_projects/blob/master/precision_brain_science/s_track_multi_113619.pbs
 
+#play with https://db.humanconnectome.org/
+
 ## load necessary modules on the Karst cluster environment
 module unload mrtrix/0.3.12
 module load mrtrix/0.2.12
